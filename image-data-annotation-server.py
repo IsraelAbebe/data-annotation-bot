@@ -5,6 +5,9 @@ import pandas as pd
 import telebot
 from telebot import types
 
+
+file_name = 'data/test.csv'
+
 def read_csv(file_name):
     return pd.read_csv(file_name)
 
@@ -19,7 +22,7 @@ bot = telebot.TeleBot(TOKEN)
 
 @bot.message_handler(commands=['start'])
 def start(message):
-    images_df = read_csv('data/amh_ethiopia_data-test.csv')
+    images_df = read_csv(file_name)
     # print(images_df.head())
     if images_df.empty:
         bot.send_message(chat_id=message.chat.id, text="All images have been shown.")
@@ -39,14 +42,14 @@ def start(message):
 @bot.callback_query_handler(func=lambda call: call.data.startswith('yes_'))
 def callback_yes(call):
     image_id = call.data.split('_')[1]
-    update_csv('data/amh_ethiopia_data-test.csv', int(image_id), 'yes')
+    update_csv(file_name, int(image_id), 'yes')
     bot.send_message(chat_id=call.message.chat.id, text="Thank you for your response!")
     start(call.message)
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('no_'))
 def callback_no(call):
     image_id = call.data.split('_')[1]
-    update_csv('data/amh_ethiopia_data-test.csv', int(image_id), 'no')
+    update_csv(file_name, int(image_id), 'no')
     bot.send_message(chat_id=call.message.chat.id, text="Thank you for your response!")
     start(call.message)
 
